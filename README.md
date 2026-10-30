@@ -27,6 +27,14 @@ The application follows a standard three-tier architecture:
 You will need Python 3.13 or newer, [uv](https://docs.astral.sh/uv/) and PostgreSQL installed. Then install the project's dependencies by running the following command from the root of the project directory:
 
 ```bash
+uv venv 
+```
+
+```bash
+uv init --bare
+```
+
+```bash
 uv sync
 ```
 
