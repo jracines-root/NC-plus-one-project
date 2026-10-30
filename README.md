@@ -67,3 +67,43 @@ To create the tables and load the seed data, run:
 ```bash
 uv run python -m db.seed
 ```
+
+## Running the API
+
+To start the server, run:
+
+```bash
+uv run uvicorn app.main:app --reload
+```
+
+The API will be available at http://127.0.0.1:8000, with interactive documentation at http://127.0.0.1:8000/docs.
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+| ------ | -------- | ----------- |
+| GET | `/api/events` | Returns all events, ordered by soonest start time |
+| GET | `/api/events/:id` | Returns a single event with its venue details. Responds with `404` if the event doesn't exist, or `400` if the id isn't a valid integer |
+
+**Note on `location`:** this value comes from the venue details in the seed data, and its format differs between the two endpoints:
+
+* `/api/events` combines the venue's name and address, which is why it doesn't match the ticket's `Nexus, Leeds, LS2 8PD` example. For example, the first event returns `Nexus, University of Leeds, Discovery Way, Leeds, LS2 3AA`.
+* `/api/events/:id` returns only the venue's name, with `address` and `capacity` as separate fields. For example, the first event returns `Nexus, University of Leeds`.
+
+## Running the Tests
+
+The tests use their own database, `nc_plus_one_test`, and their own data in `db/test_data`, so they never touch your development data.
+
+To create or completely reset the test database, run:
+
+```bash
+psql -f db/test_setup.sql
+```
+
+Create a `.env.test` file in the root directory, in the same format as your development env file but with `DB_NAME=nc_plus_one_test`.
+
+Then run the tests. The test database is re-seeded before every test, so there is no need to seed it yourself:
+
+```bash
+uv run pytest
+```
