@@ -2,9 +2,11 @@ import re
 
 from fastapi import FastAPI, HTTPException
 from psycopg2.extras import RealDictCursor
+from app.routes import auth
 from src.connection import get_db_connection
 
 app = FastAPI(title="BookingManager API")
+app.include_router(auth.router)
 
 @app.get("/api/events")
 def get_events():

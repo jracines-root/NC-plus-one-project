@@ -1,4 +1,4 @@
-from src.utilis import hash_password, hash_user_passwords, verify_password
+from src.utils import hash_password, hash_user_passwords, verify_password
 
 
 def test_hash_password_does_not_return_the_plaintext():
