@@ -37,7 +37,7 @@ def test_login_token_is_rejected_if_signed_with_a_different_secret(client):
     token = client.post("/api/auth/login", json={"email": "alice@example.com", "password": "password123"}).json()["token"]
 
     with pytest.raises(jwt.InvalidSignatureError):
-        jwt.decode(token, "not-the-real-secret", algorithms=["HS256"])
+        jwt.decode(token, "a-different-secret-that-is-also-long-enough", algorithms=["HS256"])
 
 
 def test_login_responds_with_401_when_password_is_wrong(client):
