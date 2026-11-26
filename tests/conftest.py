@@ -3,6 +3,10 @@ import os
 # Must be set before the imports below, as src/connection.py picks its .env file on import
 os.environ["ENV"] = "test"
 
+
+# A low bcrypt cost keeps the seed fast
+os.environ["BCRYPT_ROUNDS"] = "4"
+
 import pytest
 from fastapi.testclient import TestClient
 
