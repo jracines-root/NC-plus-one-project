@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from psycopg2.extras import execute_values
 from src.connection import ENV, get_db_connection
+from src.utils import hash_user_passwords
 
 DATA_DIR = Path(__file__).resolve().parent / ("test_data" if ENV == "test" else "data")
 
@@ -64,7 +65,7 @@ def insert_test_data(cur):
     """3. Insert the test data."""
     # Functionality will be added in subsequent tickets
     with open(DATA_DIR / "users.json", encoding="utf-8") as f:  # check the real filename
-        users = json.load(f)
+        users = hash_user_passwords(json.load(f))
 
     execute_values(cur, "INSERT INTO users (email, password, name) VALUES %s;", users, template="(%(email)s, %(password)s, %(name)s)",)
 
