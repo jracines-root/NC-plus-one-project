@@ -92,6 +92,7 @@ The API will be available at http://127.0.0.1:8000, with interactive documentati
 | GET | `/api/events` | Returns all events, ordered by soonest start time |
 | GET | `/api/events/:id` | Returns a single event with its venue details. Responds with `404` if the event doesn't exist, or `400` if the id isn't a valid integer |
 | POST | `/api/auth/login` | Takes `email` and `password` and returns a signed JWT that identifies the user. Responds with `401` for a wrong email or password (the same response for both), or `400` if either field is missing |
+| POST | `/api/auth/register` | Takes `name`, `email` and `password`, stores the user with a hashed password and returns them with a `201` (never including the password). Responds with `409` if the email is already registered, or `400` if any field is missing |
 
 **Note on `location`:** this value comes from the venue details in the seed data, and its format differs between the two endpoints:
 
