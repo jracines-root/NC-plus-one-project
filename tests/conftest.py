@@ -7,6 +7,8 @@ os.environ["ENV"] = "test"
 # A low bcrypt cost keeps the seed fast
 os.environ["BCRYPT_ROUNDS"] = "4"
 
+os.environ["JWT_SECRET"] = "test-secret"
+
 import pytest
 from fastapi.testclient import TestClient
 
