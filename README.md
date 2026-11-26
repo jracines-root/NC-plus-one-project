@@ -56,6 +56,13 @@ DB_USER=your_postgres_username
 DB_PASSWORD=your_postgres_password
 DB_HOST=localhost
 DB_PORT=5432
+JWT_SECRET=your_secret_a_long_random_str
+```
+
+`JWT_SECRET` is used to sign login tokens. Use a long random value of at least 32 characters, which you can generate with:
+
+```bash
+uv run python -c "import secrets; print(secrets.token_hex(32))"
 ```
 
 `DB_HOST` and `DB_PORT` default to `localhost` and `5432` if left out. `DB_PASSWORD` must be included, but can be left blank if your local PostgreSQL doesn't require one.
@@ -84,6 +91,7 @@ The API will be available at http://127.0.0.1:8000, with interactive documentati
 | ------ | -------- | ----------- |
 | GET | `/api/events` | Returns all events, ordered by soonest start time |
 | GET | `/api/events/:id` | Returns a single event with its venue details. Responds with `404` if the event doesn't exist, or `400` if the id isn't a valid integer |
+| POST | `/api/auth/login` | Takes `email` and `password` and returns a signed JWT that identifies the user. Responds with `401` for a wrong email or password (the same response for both), or `400` if either field is missing |
 
 **Note on `location`:** this value comes from the venue details in the seed data, and its format differs between the two endpoints:
 
