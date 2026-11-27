@@ -87,3 +87,11 @@ def test_login_responds_with_400_when_body_is_not_a_json_object(client, raw_body
 
     assert response.status_code == 400
     assert response.json() == MISSING_FIELDS
+
+
+@pytest.mark.parametrize("email", ["ALICE@EXAMPLE.COM", "Alice@Example.com", "  alice@example.com "])
+def test_login_ignores_email_case_and_surrounding_whitespace(client, email):
+    response = client.post("/api/auth/login", json={"email": email, "password": "password123"})
+
+    assert response.status_code == 200
+    assert decode(response.json()["token"])["sub"] == "1"

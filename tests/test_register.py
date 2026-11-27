@@ -14,7 +14,7 @@ def count_users():
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
-            cur.execute("SELECT COUNT(*) FROM users;")
+            cur.execute("SELECT COUNT(*) FROM users;") 
             return cur.fetchone()[0]
     finally:
         conn.close()
@@ -134,3 +134,48 @@ def test_register_responds_with_400_when_body_is_not_a_json_object(client, raw_b
 
     assert response.status_code == 400
     assert response.json() == MISSING_FIELDS
+
+
+INVALID_EMAIL = {"detail": "Email must be a valid email address"}
+
+
+def test_register_stores_the_email_in_lowercase(client):
+    user = client.post(
+        "/api/auth/register",
+        json={"name": "Grace Hopper", "email": "Grace@Example.COM", "password": "securepassword123"},
+    ).json()["user"]
+
+    assert user["email"] == "grace@example.com"
+    assert fetch_stored_password("grace@example.com") is not None
+
+
+def test_register_removes_whitespace_around_the_email(client):
+    user = client.post(
+        "/api/auth/register",
+        json={"name": "Grace Hopper", "email": "  grace@example.com ", "password": "securepassword123"},
+    ).json()["user"]
+
+    assert user["email"] == "grace@example.com"
+
+
+def test_register_responds_with_409_when_email_differs_only_by_case(client):
+    response = client.post(
+        "/api/auth/register",
+        json={"name": "Another Alice", "email": "ALICE@example.com", "password": "securepassword123"},
+    )
+
+    assert response.status_code == 409
+    assert response.json() == EMAIL_TAKEN
+    assert count_users() == 6
+
+
+@pytest.mark.parametrize("email", ["not-an-email", "grace@", "@example.com", "grace@example", "   "])
+def test_register_responds_with_400_when_email_is_not_valid(client, email):
+    response = client.post(
+        "/api/auth/register",
+        json={"name": "Grace Hopper", "email": email, "password": "securepassword123"},
+    )
+
+    assert response.status_code == 400
+    assert response.json() == INVALID_EMAIL
+    assert count_users() == 6

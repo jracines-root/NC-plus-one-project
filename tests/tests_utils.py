@@ -1,4 +1,6 @@
-from src.utils import hash_password, hash_user_passwords, verify_password
+import pytest
+
+from src.utils import hash_password, hash_user_passwords, is_valid_email, normalise_email, verify_password
 
 
 def test_hash_password_does_not_return_the_plaintext():
@@ -58,3 +60,42 @@ def test_hash_user_passwords_does_not_change_the_input():
     hash_user_passwords(users)
 
     assert users == [{"name": "Alice", "email": "alice@example.com", "password": "password123"}]
+
+
+def test_normalise_email_lowercases_the_email():
+    assert normalise_email("Alice@Example.COM") == "alice@example.com"
+
+
+def test_normalise_email_removes_surrounding_whitespace():
+    assert normalise_email("  alice@example.com \n") == "alice@example.com"
+
+
+def test_normalise_email_leaves_a_normalised_email_unchanged():
+    assert normalise_email("alice@example.com") == "alice@example.com"
+
+
+@pytest.mark.parametrize(
+    "email",
+    ["alice@example.com", "alice.smith@example.co.uk", "alice+events@example.com", "a1_b-2@sub.example.org"],
+)
+def test_is_valid_email_accepts_valid_emails(email):
+    assert is_valid_email(email) is True
+
+
+@pytest.mark.parametrize(
+    "email",
+    [
+        "not-an-email",
+        "alice@",
+        "@example.com",
+        "alice@example",
+        "alice@@example.com",
+        "alice smith@example.com",
+        "alice@exa mple.com",
+        "alice@example.",
+        "alice@.com",
+        "",
+    ],
+)
+def test_is_valid_email_rejects_invalid_emails(email):
+    assert is_valid_email(email) is False
